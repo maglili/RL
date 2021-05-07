@@ -1,9 +1,13 @@
 import gym
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 
 
 def choose_action(state, q_table, action_space, epsilon):
+    """
+    behavior policy: epsilon-greedy policy.
+    """
     if np.random.random_sample() < epsilon:  # 有 ε 的機率會選擇隨機 action
         return action_space.sample()
     else:  # 其他時間根據現有 policy 選擇 action，也就是在 Q table 裡目前 state 中，選擇擁有最大 Q value 的 action
@@ -11,6 +15,9 @@ def choose_action(state, q_table, action_space, epsilon):
 
 
 def get_state(observation, n_buckets, state_bounds):
+    """
+    mapping continue state to discrete state.
+    """
     state = [0] * len(observation)
     for i, s in enumerate(observation):  # 每個 feature 有不同的分配
         l, u = state_bounds[i][0], state_bounds[i][1]  # 每個 feature 值的範圍上下限
@@ -51,6 +58,8 @@ get_lr = lambda i: max(
 )  # learning rate; 隨時間遞減
 gamma = 0.99  # reward discount factor
 
+return_list = []
+
 # Q-learning
 for i_episode in range(200):
     epsilon = get_epsilon(i_episode)
@@ -59,7 +68,9 @@ for i_episode in range(200):
     observation = env.reset()
     rewards = 0
     state = get_state(observation, n_buckets, state_bounds)  # 將連續值轉成離散
-    for t in range(250):
+    # for t in range(250):
+    t = 0
+    while True:
         env.render()
 
         action = choose_action(state, q_table, env.action_space, epsilon)
@@ -79,10 +90,19 @@ for i_episode in range(200):
 
         if done:
             print(
-                "Episode finished after {} timesteps, total rewards {}".format(
-                    t + 1, rewards
+                "Episode {} finished after {} timesteps, total rewards {}".format(
+                    i_episode, t + 1, rewards
                 )
             )
+            return_list.append(rewards)
             break
-
+        t += 1
 env.close()
+
+# plot return vs eposodes
+plt.plot(return_list)
+plt.xlabel("episodes")
+plt.ylabel("accumulated reward")
+plt.title("Return vs episodes")
+plt.savefig("./return.png")
+plt.show()
