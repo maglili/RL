@@ -1,16 +1,28 @@
 import gym
 import numpy as np
+from numpy.random import default_rng
 import math
+import random
 import matplotlib.pyplot as plt
+
+seed_val = 0
+random.seed(seed_val)
+np.random.seed(seed_val)
+rng = default_rng(seed_val)  # random generator
 
 
 def choose_action(state, q_table, action_space, epsilon):
     """
     behavior policy: epsilon-greedy policy.
     """
-    if np.random.random_sample() < epsilon:  # 有 ε 的機率會選擇隨機 action
+    if rng.random() < epsilon:
+        while True:
+            amax = np.argmax(q_table[state])
+            a = action_space.sample()
+            if a != amax:
+                break
         return action_space.sample()
-    else:  # 其他時間根據現有 policy 選擇 action，也就是在 Q table 裡目前 state 中，選擇擁有最大 Q value 的 action
+    else:
         return np.argmax(q_table[state])
 
 
@@ -32,6 +44,7 @@ def get_state(observation, n_buckets, state_bounds):
 
 
 env = gym.make("CartPole-v0")
+env.action_space.np_random.seed(seed_val)
 
 # 準備 Q table
 ## Environment 中各個 feature 的 bucket 分配數量
@@ -49,26 +62,24 @@ state_bounds[3] = [-math.radians(50), math.radians(50)]
 ## Q table，每個 state-action pair 存一值
 q_table = np.zeros(n_buckets + (n_actions,))
 
-# 一些學習過程中的參數
-get_epsilon = lambda i: max(
-    0.01, min(1, 1.0 - math.log10((i + 1) / 25))
-)  # epsilon-greedy; 隨時間遞減
-get_lr = lambda i: max(
-    0.01, min(0.5, 1.0 - math.log10((i + 1) / 25))
-)  # learning rate; 隨時間遞減
-gamma = 0.99  # reward discount factor
-
+# hyperpamaters
+# epsilon-greedy; 隨時間遞減
+get_epsilon = lambda i: max(0.01, min(1, 1.0 - math.log10((i + 1) / 25)))
+# learning rate; 隨時間遞減
+get_lr = lambda i: max(0.01, min(0.5, 1.0 - math.log10((i + 1) / 25)))
+# discount factor
+gamma = 0.99
+# save accumulated reward
 return_list = []
 
 # Q-learning
 for i_episode in range(200):
     epsilon = get_epsilon(i_episode)
     lr = get_lr(i_episode)
-
+    env.seed(i_episode)
     observation = env.reset()
     rewards = 0
     state = get_state(observation, n_buckets, state_bounds)  # 將連續值轉成離散
-    # for t in range(250):
     t = 0
     while True:
         env.render()
@@ -80,18 +91,18 @@ for i_episode in range(200):
         next_state = get_state(observation, n_buckets, state_bounds)
 
         # 更新 Q table
-        q_next_max = np.amax(q_table[next_state])  # 進入下一個 state 後，預期得到最大總 reward
+        q_next_max = np.amax(q_table[next_state])
         q_table[state + (action,)] += lr * (
             reward + gamma * q_next_max - q_table[state + (action,)]
-        )  # 就是那個公式
+        )
 
-        # 前進下一 state
         state = next_state
 
         if done:
+            env.render()
             print(
-                "Episode {} finished after {} timesteps, total rewards {}".format(
-                    i_episode, t + 1, rewards
+                "Episode {} finished after {} timesteps, total rewards {}. epsilon {}, lr {}".format(
+                    i_episode, t + 1, rewards, epsilon, lr
                 )
             )
             return_list.append(rewards)
@@ -104,5 +115,5 @@ plt.plot(return_list)
 plt.xlabel("episodes")
 plt.ylabel("accumulated reward")
 plt.title("Return vs episodes")
-plt.savefig("./return.png")
+plt.savefig("./return-CartPole.png")
 plt.show()
