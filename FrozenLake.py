@@ -17,7 +17,6 @@ rng = default_rng(seed_val)  # random generator
 
 
 # 1. Load Environment and Q-table structure
-
 env = gym.make("FrozenLake-v0")
 Q = np.zeros([env.observation_space.n, env.action_space.n])
 print()
@@ -35,7 +34,7 @@ get_lr = lambda i: max(
     0.01, min(0.7, 1.0 - math.log10((i + 1) / 100))
 )  # learning rate; 隨時間遞減
 gamma = 1
-epochs = 500
+epochs = 1000
 return_list = []  # rewards per episode calculate
 
 
@@ -92,5 +91,5 @@ plt.plot(return_list)
 plt.xlabel("episodes")
 plt.ylabel("accumulated reward")
 plt.title("Return vs episodes")
-plt.savefig("./return-FrozenLake.png")
+plt.savefig("./return-FrozenLake.png", bbox_inches="tight")
 plt.show()

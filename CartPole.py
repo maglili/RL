@@ -68,12 +68,13 @@ get_epsilon = lambda i: max(0.01, min(1, 1.0 - math.log10((i + 1) / 25)))
 # learning rate; 隨時間遞減
 get_lr = lambda i: max(0.01, min(0.5, 1.0 - math.log10((i + 1) / 25)))
 # discount factor
-gamma = 0.99
+gamma = 1
 # save accumulated reward
 return_list = []
+epochs = 200
 
 # Q-learning
-for i_episode in range(200):
+for i_episode in range(epochs):
     epsilon = get_epsilon(i_episode)
     lr = get_lr(i_episode)
     env.seed(i_episode)
@@ -115,5 +116,5 @@ plt.plot(return_list)
 plt.xlabel("episodes")
 plt.ylabel("accumulated reward")
 plt.title("Return vs episodes")
-plt.savefig("./return-CartPole.png")
+plt.savefig("./return-CartPole.png", bbox_inches="tight")
 plt.show()
