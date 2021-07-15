@@ -7,11 +7,12 @@ import random
 
 env = gym.make("BreakoutNoFrameskip-v4")
 print("env", env)
-print("Observation Space: ", env.observation_space)
-print("Action Space       ", env.action_space)
-print("Action meaning     ", env.unwrapped.get_action_meanings())
+print("Observation Space:", env.observation_space)
+print("Observation Space shape:", env.observation_space.shape)
+print("Action Space     :", env.action_space)
+print("Action Space shape:", env.action_space.shape)
+print("Action meaning   :", env.unwrapped.get_action_meanings())
 print("=" * 40)
-print(help(env.unwrapped))
 
 
 class ConcatObs(gym.Wrapper):
@@ -73,7 +74,7 @@ wrapped_env = ObservationWrapper(RewardWrapper(ActionWrapper(env)))
 
 obs = wrapped_env.reset()
 
-for step in range(5):
+for step in range(500):
     action = wrapped_env.action_space.sample()
     obs, reward, done, info = wrapped_env.step(action)
 

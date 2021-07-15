@@ -1,3 +1,6 @@
 Roms/
 .vscode/
 *.rar
+*.ipynb_checkpoints/
+*.pytest_cache/
+baselines/
