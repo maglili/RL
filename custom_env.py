@@ -11,11 +11,11 @@ import time
 font = cv2.FONT_HERSHEY_COMPLEX_SMALL
 
 
-def mapping_0_1(z):
-    if z == 0.0:
-        return 1.0
-    else:
-        return 0.0
+# def mapping_0_1(z):
+#     if z == 0.0:
+#         return 1.0
+#     else:
+#         return 0.0
 
 
 # font = cv2.FONT_HERSHEY_COMPLEX_SMALL
@@ -71,8 +71,10 @@ class ChopperScape(Env):
             x, y = elem.x, elem.y
             self.canvas[y : y + elem_shape[1], x : x + elem_shape[0]] = elem.icon
 
-        text = "Fuel Left: {} | Rewards: {}".format(self.fuel_left, self.ep_return)
-        text2 = "   |   Birds: {}   Aliens: {}  Fuels: {}".format(
+        text = "Fuel Left: {} | Return(total rewards): {}".format(
+            self.fuel_left, self.ep_return
+        )
+        text2 = " | Birds: {} Aliens: {} Fuels: {}".format(
             self.bird_count, self.aliens_count, self.fuel_count
         )
         text = text + text2
@@ -409,3 +411,5 @@ if __name__ == "__main__":
             break
 
     env.close()
+# plt.imshow(obs)
+# plt.show()

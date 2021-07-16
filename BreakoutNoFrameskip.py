@@ -8,9 +8,9 @@ import random
 env = gym.make("BreakoutNoFrameskip-v4")
 print("env", env)
 print("Observation Space:", env.observation_space)
-print("Observation Space shape:", env.observation_space.shape)
+# print("Observation Space shape:", env.observation_space.shape)
 print("Action Space     :", env.action_space)
-print("Action Space shape:", env.action_space.shape)
+# print("Action Space shape:", env.action_space.shape)
 print("Action meaning   :", env.unwrapped.get_action_meanings())
 print("=" * 40)
 
@@ -39,6 +39,20 @@ class ConcatObs(gym.Wrapper):
 
     def _get_ob(self):
         return np.array(self.frames)
+
+
+env = gym.make("BreakoutNoFrameskip-v4")
+wrapped_env = ConcatObs(env, 4)
+print("The new observation space is", wrapped_env.observation_space)
+
+# Reset the Env
+obs = wrapped_env.reset()
+print("Intial obs is of the shape", obs.shape)
+
+# Take one step
+obs, _, _, _ = wrapped_env.step(2)
+print("Obs after taking a step is", obs.shape)
+print("=" * 40)
 
 
 class ObservationWrapper(gym.ObservationWrapper):
@@ -73,6 +87,7 @@ class ActionWrapper(gym.ActionWrapper):
 wrapped_env = ObservationWrapper(RewardWrapper(ActionWrapper(env)))
 
 obs = wrapped_env.reset()
+print("The new observation space is", wrapped_env.observation_space)
 
 for step in range(500):
     action = wrapped_env.action_space.sample()
