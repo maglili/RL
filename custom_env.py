@@ -1,32 +1,12 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
-import PIL.Image as Image
-import gym
 import random
 
 from gym import Env, spaces
 import time
 
 font = cv2.FONT_HERSHEY_COMPLEX_SMALL
-
-
-# def mapping_0_1(z):
-#     if z == 0.0:
-#         return 1.0
-#     else:
-#         return 0.0
-
-
-# font = cv2.FONT_HERSHEY_COMPLEX_SMALL
-# test = cv2.imread("pngegg.png") / 255.0
-# test = np.float32(test)
-# start = time.time()
-# test = np.vectorize(mapping_0_1)(test)  # ok, but slow
-# print(time.time() - start)
-# plt.imshow(test)
-# plt.show()
-# quit()
 
 
 class ChopperScape(Env):
