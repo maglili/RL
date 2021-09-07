@@ -1,7 +1,6 @@
 import numpy as np
 import gym
 import time
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -10,13 +9,15 @@ import torch.nn.functional as F
 class Net(nn.Module):
     def __init__(self, n_states, n_actions, n_hidden):
         super(Net, self).__init__()
-
         # 輸入層 (state) 到隱藏層，隱藏層到輸出層 (action)
         self.fc1 = nn.Linear(n_states, n_hidden)
+        self.fc2 = nn.Linear(n_hidden, n_hidden)
         self.out = nn.Linear(n_hidden, n_actions)
 
     def forward(self, x):
         x = self.fc1(x)
+        x = F.relu(x)  # ReLU activation
+        x = self.fc2(x)
         x = F.relu(x)  # ReLU activation
         actions_value = self.out(x)
         return actions_value
@@ -72,11 +73,6 @@ class DQN(object):
     def store_transition(self, state, action, reward, next_state):
         # 打包 experience
         transition = np.hstack((state, [action, reward], next_state))
-        # print("state:", state)
-        # print("action:", action)
-        # print("reward:", reward)
-        # print("next_state:", next_state)
-        # print("transition:", transition)
         # 存進 memory；舊 memory 可能會被覆蓋
         index = self.memory_counter % self.memory_capacity
         self.memory[index, :] = transition
@@ -97,7 +93,9 @@ class DQN(object):
         q_eval = self.eval_net(b_state).gather(
             1, b_action
         )  # 重新計算這些 experience 當下 eval net 所得出的 Q value
-        q_next = self.target_net(b_next_state).detach()  # detach 才不會訓練到 target net
+
+        with torch.no_grad():
+            q_next = self.target_net(b_next_state).detach()
         q_target = b_reward + self.gamma * q_next.max(1)[0].view(
             self.batch_size, 1
         )  # 計算這些 experience 當下 target net 所得出的 Q value
@@ -152,7 +150,7 @@ for i_episode in range(n_episodes):
     state = env.reset()
     while True:
         time.sleep(0.01)
-        env.render()
+        # env.render()
 
         # 選擇 action
         action = dqn.choose_action(state)
