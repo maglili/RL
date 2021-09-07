@@ -331,7 +331,7 @@ class Point:
 class Chopper(Point):
     def __init__(self, name, x_max, x_min, y_max, y_min):
         super().__init__(name, x_max, x_min, y_max, y_min)
-        self.icon = cv2.imread("pics\helicopter.png") / 255.0
+        self.icon = cv2.imread("pics/helicopter.png") / 255.0
         # test = cv2.imread("./pics/pngegg.png") / 255.0
         # test = np.float32(test)
         # self.icon = np.vectorize(mapping_0_1)(test)  # ok, but slow
