@@ -4,3 +4,4 @@ Roms/
 *.ipynb_checkpoints/
 *.pytest_cache/
 baselines/
+*.pt

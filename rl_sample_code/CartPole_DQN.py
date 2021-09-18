@@ -165,7 +165,6 @@ for i_episode in range(n_episodes):
         # 有足夠 experience 後進行訓練
         if dqn.memory_counter > memory_capacity:
             dqn.learn()
-            quit()
 
         # 進入下一 state
         state = next_state
